@@ -1,0 +1,130 @@
+#include <iostream>
+using namespace std;
+int main() {
+	struct Student {
+		int roll;
+		string name;
+		float mark;
+	};
+	Student arr[100];//Change to dynamic allocation
+	int choice;
+	int flag = 1;
+	int i = 0; // using i for student counter
+	while (flag == 1) {
+		cout << "Enter your choice\n"<< "1. Enter student details\n"<< "2. Display details of all students\n"<< "3. Insertion Sort by Roll No\n"<< "4. Shell Sort by Roll No\n"<< "5. Insertion Sort by Name\n"<< "7. Exit" << endl;
+		cin >> choice;
+
+		switch (choice) {
+		case 1:
+			cout << "Enter name, roll no and marks of the student:" << endl;
+			cin>>arr[i].name;
+			cin >> arr[i].roll;
+			cin >> arr[i].mark;
+			i++;
+			break;
+
+		case 2:
+			if (i == 0) {
+				cout << "No student data present. Please add students first." << endl;
+			} else {
+				cout << "The details are as follows:" << endl;
+				for (int j = 0; j < i; j++) {
+					cout << j + 1 << ". " << "Name: " << arr[j].name << "\t"<< "Roll No: " << arr[j].roll << "\t"<< "Marks: " << arr[j].mark << endl;
+				}
+			}
+			break;
+
+		case 3:
+			if (i <= 1) {
+				cout << "Not enough students to sort." << endl;
+				break;
+			}
+			// = instead of == , the plus one problem, loop condition
+			cout<<"Insertion Sort by roll no Started"<<endl;
+			for (int x = 1; x < i; x++) {
+				Student key = arr[x];
+				int y = x - 1;
+				while (y >= 0 && arr[y].roll > key.roll) {
+					arr[y + 1] = arr[y];
+					y = y - 1;
+				}
+				arr[y + 1] = key;
+			}
+			cout<<"Insertion Sort by roll no Done"<<endl;
+			break;
+		case 4:
+			if (i <= 1) {
+				cout << "Not enough students to sort." << endl;
+				break;
+			}
+
+			// Shell Sort Implementation
+			cout << "Shell Sort Sort by roll no Started" << endl;
+			for (int gap = i / 2; gap > 0; gap /= 2) //managing gap size
+			{
+				for (int x = gap; x < i; x++) //sorting elements
+				{
+					Student key = arr[x]; // storing current ele
+					int y = x;                                           // Shifting
+					while (y >= gap && arr[y - gap].roll > key.roll) {
+						arr[y] = arr[y - gap];
+						y -= gap;
+					}
+					arr[y] = key; //placing in correct position
+				}
+			}
+			cout << "Shell Sort Sort by roll no Done" << endl;
+			break;
+
+		case 5:
+			//Insertion by name
+			if (i <= 1) {
+				cout << "Not enough students to sort." << endl;
+				break;
+			}
+			// = instead of == , the plus one problem, loop condition
+			cout<<"Insertion Sort by name Started"<<endl;
+			for (int x = 1; x < i; x++) {
+				Student key = arr[x];
+				int y = x - 1;
+				while (y >= 0 && arr[y].name > key.name) {
+					arr[y + 1] = arr[y];
+					y = y - 1;
+				}
+				arr[y + 1] = key;
+			}
+			cout<<"Insertion Sort by name Done"<<endl;
+			break;
+		
+		case 6:
+	    	// Shell Sort Implementation
+			cout << "Shell Sort Sort by name Started" << endl;
+			for (int gap = i / 2; gap > 0; gap /= 2) //managing gap size
+			{
+				for (int x = gap; x < i; x++) //sorting elements
+				{
+					Student key = arr[x]; // storing current ele
+					int y = x;                                           // Shifting
+					while (y >= gap && arr[y - gap].name > key.name) {
+						arr[y] = arr[y - gap];
+						y -= gap;
+					}
+					arr[y] = key; //placing in correct position
+				}
+			}
+			cout << "Shell Sort Sort by roll no Done" << endl;
+		break;
+		
+		case 7:
+			flag = 0;
+			cout << "Ending program" << endl;
+			break;
+
+		default:
+			cout << "Invalid choice. Please try again." << endl;
+			break;
+		}
+	}
+
+	return 0;
+}

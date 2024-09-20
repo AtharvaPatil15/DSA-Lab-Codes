@@ -1,8 +1,6 @@
 #include <iostream>
 #include <string>
 
-// atharva
-// add space so it is possible to separate visually
 
 using namespace std;
 

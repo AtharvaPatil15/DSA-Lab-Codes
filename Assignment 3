@@ -1,0 +1,265 @@
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+class Node {
+public:
+    string song;
+    string artists;
+    float duration;
+    Node *next;
+
+    Node() : song(""), artists(""), duration(0.0), next(nullptr) {}
+
+    Node(string s, string a, float d) : song(s), artists(a), duration(d), next(nullptr) {}
+};
+
+class MusicPlayer {
+public:
+    Node *head = nullptr;
+
+    void AddSongs(string song, string artists, float duration, int opt, int place = 0) {
+        if (duration <= 0) {
+            cout << "Error: Duration should be positive." << endl;
+            return;
+        }
+
+        Node *nn = new Node(song, artists, duration);
+
+        if (head == nullptr) {
+            head = nn;
+            return;
+        }
+
+        // Add at the start
+        if (opt == 0) {
+            nn->next = head;
+            head = nn;
+        }
+        // Add at the end
+        else if (opt == 1) {
+            Node *temp = head;
+            while (temp->next != nullptr) {
+                temp = temp->next;
+            }
+            temp->next = nn;
+        }
+        // Add at a specific position
+        else if (opt == 2) {
+            if (place <= 0) {
+                cout << "Error: Invalid position." << endl;
+                delete nn;
+                return;
+            }
+
+            Node *temp = head;
+            int n = place - 1;
+
+            while (--n > 0 && temp->next != nullptr) {
+                temp = temp->next;
+            }
+
+            if (n > 0) {
+                cout << "Error: Position out of bounds." << endl;
+                delete nn;
+                return;
+            }
+
+            nn->next = temp->next;
+            temp->next = nn;
+        }
+    }
+
+    void RemoveSong(int opt, int place = 0) {
+        if (head == nullptr) {
+            cout << "Error: No songs in the playlist to remove." << endl;
+            return;
+        }
+
+        // Remove at the start
+        if (opt == 0) {
+            Node *temp = head;
+            head = head->next;
+            delete temp;
+        }
+        // Remove at the end
+        else if (opt == 1) {
+            if (head->next == nullptr) {
+                delete head;
+                head = nullptr;
+                return;
+            }
+
+            Node *temp = head;
+            while (temp->next->next != nullptr) {
+                temp = temp->next;
+            }
+
+            delete temp->next;
+            temp->next = nullptr;
+        }
+        // Remove at a specific position
+        else if (opt == 2) {
+            if (place <= 0) {
+                cout << "Error: Invalid position." << endl;
+                return;
+            }
+
+            Node *temp = head;
+            int n = place - 1;
+
+            while (--n > 0 && temp->next != nullptr) {
+                temp = temp->next;
+            }
+
+            if (n > 0 || temp->next == nullptr) {
+                cout << "Error: Position out of bounds." << endl;
+                return;
+            }
+
+            Node *todelete = temp->next;
+            temp->next = temp->next->next;
+            delete todelete;
+        }
+    }
+
+    void Display() {
+        if (head == nullptr) {
+            cout << "No songs in the playlist." << endl;
+            return;
+        }
+
+        Node *temp = head;
+        int songIndex = 1;
+        cout << "\n--- Playlist ---\n";
+        while (temp != nullptr) {
+            cout << "Song " << songIndex << ":" << endl;
+            cout << "  Name: " << temp->song << endl;
+            cout << "  Artist: " << temp->artists << endl;
+            cout << "  Duration: " << temp->duration << " minutes" << endl;
+            cout << "-----------------------" << endl;
+            temp = temp->next;
+            songIndex++;
+        }
+    }
+
+    void PlaySpecificSong(string song) {
+        Node *temp = head;
+        while (temp != nullptr) {
+            if (temp->song == song) {
+                cout << "Currently Playing: " << temp->song << endl;
+                return;
+            }
+            temp = temp->next;
+        }
+        cout << "Error: No song found with the name: " << song << endl;
+    }
+};
+
+int main() {
+    MusicPlayer mp;
+    int choice, subChoice;
+    string song, artists;
+    float duration;
+    int place;
+
+    do {
+        cout << "\n--- Music Player Menu ---" << endl;
+        cout << "1. Add Song" << endl;
+        cout << "2. Remove Song" << endl;
+        cout << "3. Display All Songs" << endl;
+        cout << "4. Play Specific Song" << endl;
+        cout << "5. Exit" << endl;
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        if (cin.fail()) {
+            cout << "Error: Invalid input." << endl;
+            cin.clear();
+            cin.ignore();
+            continue;
+        }
+
+        switch (choice) {
+        case 1:
+            cout << "\n--- Add Song Menu ---" << endl;
+            cout << "1. Add at Start" << endl;
+            cout << "2. Add at End" << endl;
+            cout << "3. Add at Specific Position" << endl;
+            cout << "Enter your choice: ";
+            cin >> subChoice;
+
+            cout << "Enter song name: ";
+            cin.ignore();
+            getline(cin, song);
+            cout << "Enter artists: ";
+            getline(cin, artists);
+            cout << "Enter duration (in minutes): ";
+            cin >> duration;
+
+            switch (subChoice) {
+            case 1:
+                mp.AddSongs(song, artists, duration, 0);
+                break;
+            case 2:
+                mp.AddSongs(song, artists, duration, 1);
+                break;
+            case 3:
+                cout << "Enter the position to add the song: ";
+                cin >> place;
+                mp.AddSongs(song, artists, duration, 2, place);
+                break;
+            default:
+                cout << "Error: Invalid choice." << endl;
+            }
+            break;
+
+        case 2:
+            cout << "\n--- Remove Song Menu ---" << endl;
+            cout << "1. Remove at Start" << endl;
+            cout << "2. Remove at End" << endl;
+            cout << "3. Remove at Specific Position" << endl;
+            cout << "Enter your choice: ";
+            cin >> subChoice;
+
+            switch (subChoice) {
+            case 1:
+                mp.RemoveSong(0);
+                break;
+            case 2:
+                mp.RemoveSong(1);
+                break;
+            case 3:
+                cout << "Enter the position to remove the song: ";
+                cin >> place;
+                mp.RemoveSong(2, place);
+                break;
+            default:
+                cout << "Error: Invalid choice." << endl;
+            }
+            break;
+
+        case 3:
+            mp.Display();
+            break;
+
+        case 4:
+            cout << "Enter song name to play: ";
+            cin.ignore();
+            getline(cin, song);
+            mp.PlaySpecificSong(song);
+            break;
+
+        case 5:
+            cout << "Exiting Music Player..." << endl;
+            break;
+
+        default:
+            cout << "Error: Invalid choice, please try again." << endl;
+        }
+
+    } while (choice != 5);
+
+    return 0;
+}

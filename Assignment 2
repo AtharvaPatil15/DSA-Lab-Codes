@@ -1,0 +1,167 @@
+#include <iostream>
+#include <string>
+#include <vector> // Use vector for dynamic size
+using namespace std;
+
+struct EMP {
+    int id;
+    string name;
+    float salary;
+};
+
+void merge(EMP arr[], int l, int mid, int r) {
+    int n1 = mid - l + 1;
+    int n2 = r - mid;
+
+    // Create temp arrays
+    EMP* L = new EMP[n1];
+    EMP* R = new EMP[n2];
+
+    // Copy data to temp arrays
+    for (int i = 0; i < n1; i++)
+        L[i] = arr[l + i];
+    for (int j = 0; j < n2; j++)
+        R[j] = arr[mid + 1 + j];
+
+    // Merge the temp arrays back into arr[l..r]
+    int i = 0, j = 0, k = l;
+    while (i < n1 && j < n2) {
+        if (L[i].name <= R[j].name) {
+            arr[k] = L[i];
+            i++;
+        } else {
+            arr[k] = R[j];
+            j++;
+        }
+        k++;
+    }
+
+    // Copy the remaining elements of L[], if any
+    while (i < n1) {
+        arr[k] = L[i];
+        i++;
+        k++;
+    }
+
+    // Copy the remaining elements of R[], if any
+    while (j < n2) {
+        arr[k] = R[j];
+        j++;
+        k++;
+    }
+
+    delete[] L;
+    delete[] R;
+}
+
+void mergesort(EMP arr[], int l, int r) {
+    if (l < r) {
+        int mid = l + (r - l) / 2;
+        mergesort(arr, l, mid);
+        mergesort(arr, mid + 1, r);
+        merge(arr, l, mid, r);
+    }
+}
+
+void quick(EMP arr[], int f, int l) {
+    if (f < l) {
+        int pivot = arr[f].id;
+        int i = f + 1;
+        int j = l;
+
+        while (i <= j) {
+            while (i <= l && arr[i].id <= pivot) {
+                i++;
+            }
+            while (j >= f && arr[j].id > pivot) {
+                j--;
+            }
+            if (i < j) {
+                EMP temp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = temp;
+            }
+        }
+        EMP temp = arr[j];
+        arr[j] = arr[f];
+        arr[f] = temp;
+
+        quick(arr, f, j - 1);
+        quick(arr, j + 1, l);
+    }
+}
+
+int main() {
+    int n, c = 0, i = 0, flag = 1;
+    cout << "Enter the number of employees whose database is to be made: ";
+    cin >> n;
+
+    vector<EMP> arr(n); // Use vector for dynamic allocation
+
+    while (flag == 1) {
+        if (i != n) {
+            cout << "\nEnter your choice:\n"
+                 << "1. Enter employee details\n"
+                 << "2. Display database\n"
+                 << "3. Quick Sort by id\n"
+                 << "4. Merge Sort by name\n"
+                 << "5. Exit\n";
+        } else {
+            cout << "\nEnter your choice:\n"
+                 << "1. Not viable\n"
+                 << "2. Display database\n"
+                 << "3. Quick Sort by id\n"
+                 << "4. Merge Sort by name\n"
+                 << "5. Exit\n";
+        }
+        cin >> c;
+
+        switch (c) {
+        case 1:
+            if (i < n) {
+                cout << "Enter employee id: ";
+                cin >> arr[i].id;
+                cin.ignore(); // Clear newline left by previous input
+                cout << "Enter employee name: ";
+                getline(cin, arr[i].name); // Use getline to allow spaces in names
+                cout << "Enter employee salary: ";
+                cin >> arr[i].salary;
+                i++;
+            } else {
+                cout << "Database is full.\n";
+            }
+            break;
+
+        case 2:
+            if (i == 0) {
+                cout << "No employee data present.\n";
+            } else {
+                cout << "Displaying the Database:\n";
+                for (int j = 0; j < i; j++) {
+                    cout << j + 1 << ". "
+                         << "Name: " << arr[j].name << "\t"
+                         << "ID: " << arr[j].id << "\t"
+                         << "Salary: " << arr[j].salary << endl;
+                }
+            }
+            break;
+
+        case 3:
+            quick(arr.data(), 0, i - 1);
+            cout << "Database sorted by id using Quick Sort.\n";
+            break;
+        case 4:
+            mergesort(arr.data(), 0, i - 1);
+            cout << "Database sorted by name using Merge Sort.\n";
+            break;
+        case 5:
+            flag = 0;
+            cout << "Ending program\n";
+            break;
+        default:
+            cout << "Invalid choice. Please try again.\n";
+            break;
+        }
+    }
+    return 0;
+}

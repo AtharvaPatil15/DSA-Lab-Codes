@@ -1,0 +1,236 @@
+#include <iostream>
+#include <string>
+
+// atharva
+// add space so it is possible to separate visually
+
+using namespace std;
+
+class Node
+{
+public:
+    string data;
+    Node *next;
+
+    Node(string d)
+    {
+        next = nullptr;
+        data = d;
+    }
+};
+
+// Implement a navigation system for a delivery service using a circular linked list to represent
+// routes. The navigation system should support the following functionalities:
+// a. Add route
+// b. Remove route
+// c. Display route
+
+class DeliveryService
+{
+public:
+    Node *head = nullptr;
+
+    void AddRoute(string data)
+    {
+        cout << "Adding Route " << data << endl;
+        Node *nn = new Node(data);
+        if (head == nullptr)
+        {
+            head = nn;
+            nn->next = nn;
+        }
+        else
+        {
+            Node *temp = head;
+            while (temp->next != head)
+            {
+                temp = temp->next;
+            }
+            nn->next = head;
+            temp->next = nn;
+        }
+    }
+
+    void RemoveRoute(int opt, string data = "")
+    {
+        if (head == nullptr)
+        {
+            cout << "No routes available to remove." << endl;
+            return;
+        }
+
+        Node *temp = head;
+
+        // Case 1: Remove the head node
+        if (opt == 0)
+        {
+            
+                if (head->next == head)
+                {
+                    delete head;
+                    head = nullptr;
+                }
+                else
+                {
+                    Node *last = head;
+                    while (last->next != head)
+                    {
+                        last = last->next;
+                    }
+
+                    last->next = head->next;
+                    Node *toDelete = head;
+                    head = head->next;
+                    delete toDelete;
+                }
+                cout << "Head route removed." << endl;
+                return;
+            
+        }
+
+        // Case 2: Remove the last node
+        else if (opt == 1)
+        {
+            Node *prev = nullptr;
+
+            while (temp->next != head)
+            {
+                prev = temp;
+                temp = temp->next;
+            }
+
+            if (temp == head)
+            {
+                delete head;
+                head = nullptr;
+                cout << "Last route removed." << endl;
+                return;
+            }
+
+            prev->next = head;
+            delete temp;
+            cout << "Last route removed." << endl;
+            return;
+        }
+
+        // Case 3: Remove node by data
+        else
+        {
+            Node *prev = nullptr;
+            Node *current = head;
+
+            do
+            {
+                if (current->data == data)
+                {
+                    if (current == head)
+                    {
+                        RemoveRoute(0);
+                        return;
+                    }
+
+                    prev->next = current->next;
+                    delete current;
+                    cout << "Route with data " << data << " removed." << endl;
+                    return;
+                }
+
+                prev = current;
+                current = current->next;
+            } while (current != head); 
+
+            cout << "Route with data " << data << " not found." << endl;
+        }
+    }
+
+    void DisplayRoute()
+    {
+        if (head == nullptr)
+        {
+            cout << "No routes available to display." << endl;
+        }
+        else
+        {
+            Node *temp = head;
+            do
+            {
+                cout << temp->data << " -> ";
+                temp = temp->next;
+            } while (temp != head);
+            cout << "Head" << endl;
+        }
+    }
+};
+
+int main()
+{
+    DeliveryService ds;
+    int choice;
+
+    do
+    {
+        cout << "\nDelivery Service Navigation System\n";
+        cout << "1. Add Route\n";
+        cout << "2. Remove Route (Head)\n";
+        cout << "3. Remove Route (Last)\n";
+        cout << "4. Remove Route by Data\n";
+        cout << "5. Display Routes\n";
+        cout << "6. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        string routeData;
+        switch (choice)
+        {
+        case 1:
+            cout << "Enter route name: ";
+            cin >> ws;
+            getline(cin, routeData);
+            ds.AddRoute(routeData);
+            break;
+        case 2:
+            try
+            {
+                ds.RemoveRoute(0);
+            }
+            catch (const exception &e)
+            {
+                cout << e.what() << endl;
+            }
+            break;
+        case 3:
+            try
+            {
+                ds.RemoveRoute(1); 
+            }
+            catch (const exception &e)
+            {
+                cout << e.what() << endl;
+            }
+            break;
+        case 4:
+            cout << "Enter route name to remove: ";
+            cin >> ws;
+            getline(cin, routeData);
+            try
+            {
+                ds.RemoveRoute(2, routeData); 
+            }
+            catch (const exception &e)
+            {
+                cout << e.what() << endl;
+            }
+            break;
+        case 5:
+            ds.DisplayRoute();
+            break;
+        case 6:
+            cout << "Exiting..." << endl;
+            break;
+        default:
+            cout << "Invalid choice! Please try again." << endl;
+        }
+    } while (choice != 6);
+
+    return 0;
+}

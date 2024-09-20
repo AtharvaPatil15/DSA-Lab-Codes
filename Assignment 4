@@ -1,0 +1,300 @@
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+class Node
+{
+public:
+    Node *prev;
+    char data;
+    Node *next;
+
+    Node(char d)
+    {
+        prev = next = nullptr;
+        data = d;
+    }
+};
+
+class TextEditor
+{
+public:
+    Node *head = nullptr;
+
+    // Insert text at beginning, end, or specific position
+    void InsertText(char ch, int opt, int place = 0)
+    {
+        Node *nn = new Node(ch);
+        if (head == nullptr)
+        {
+            head = nn;
+            return;
+        }
+
+        // Insert at beginning
+        if (opt == 0)
+        {
+            nn->next = head;
+            head->prev = nn;
+            head = nn;
+            return;
+        }
+
+        // Insert at end
+        if (opt == 1)
+        {
+            Node *temp = head;
+            while (temp->next != nullptr)
+                temp = temp->next;
+
+            temp->next = nn;
+            nn->prev = temp;
+            return;
+        }
+
+        // Insert at specific position
+        if (opt == 2)
+        {
+            int n = place;
+            if (n == 0)
+            {
+                InsertText(ch, 0);
+                return;
+            }
+
+            Node *temp = head;
+            while (--n > 0 && temp->next != nullptr)
+            {
+                temp = temp->next;
+            }
+
+            nn->prev = temp;
+            nn->next = temp->next;
+            if (temp->next != nullptr)
+                temp->next->prev = nn;
+            temp->next = nn;
+
+            return;
+        }
+    }
+
+    // Delete text from beginning, end, or specific character
+    void DeleteText(int opt, char ch = '_')
+    {
+        if (head == nullptr)
+        {
+            cout << "No Text found to delete" << endl;
+            return;
+        }
+
+        // Delete from beginning
+        if (opt == 0)
+        {
+            Node *temp = head;
+            head = head->next;
+            if (head != nullptr)
+                head->prev = nullptr;
+
+            delete temp;
+            return;
+        }
+
+        // Delete from end
+        if (opt == 1)
+        {
+            Node *temp = head;
+            while (temp->next != nullptr)
+                temp = temp->next;
+
+            if (temp->prev != nullptr)
+                temp->prev->next = nullptr;
+
+            delete temp;
+            return;
+        }
+
+        // Delete specific character
+        if (opt == 2)
+        {
+            Node *temp = head;
+
+            while (temp != nullptr)
+            {
+                if (temp->data == ch)
+                {
+                    if (temp == head)
+                    {
+                        head = head->next;
+                        if (head != nullptr)
+                            head->prev = nullptr;
+                    }
+                    else if (temp->next == nullptr)
+                    {
+                        temp->prev->next = nullptr;
+                    }
+                    else
+                    {
+                        temp->prev->next = temp->next;
+                        temp->next->prev = temp->prev;
+                    }
+
+                    delete temp;
+                    return;
+                }
+                temp = temp->next;
+            }
+            cout << "Element Not Found!!" << endl;
+        }
+    }
+
+    // Display the text
+    void Display()
+    {
+        if (head == nullptr)
+        {
+            cout << "No text to display." << endl;
+            return;
+        }
+
+        Node *temp = head;
+        while (temp != nullptr)
+        {
+            cout << temp->data;
+            temp = temp->next;
+        }
+        cout << endl;
+    }
+
+    // Search for a specific character
+    void Search(char ch)
+    {
+        if (head == nullptr)
+        {
+            cout << "No Text found to search" << endl;
+            return;
+        }
+
+        Node *temp = head;
+        while (temp != nullptr)
+        {
+            if (temp->data == ch)
+            {
+                cout << "Found Char " << ch << endl;
+                return;
+            }
+            temp = temp->next;
+        }
+
+        cout << "Char " << ch << " not found" << endl;
+    }
+
+    // Print the text in reverse order
+    void PrintTextInReverse()
+    {
+        if (head == nullptr)
+        {
+            cout << "No text to print in reverse." << endl;
+            return;
+        }
+
+        Node *temp = head;
+        while (temp->next != nullptr)
+        {
+            temp = temp->next;
+        }
+
+        while (temp != nullptr)
+        {
+            cout << temp->data;
+            temp = temp->prev;
+        }
+        cout << endl;
+    }
+};
+
+void displayMenu()
+{
+    cout << "\nText Editor Menu\n";
+    cout << "1. Insert Text\n";
+    cout << "2. Delete Text\n";
+    cout << "3. Display Text\n";
+    cout << "4. Search Text\n";
+    cout << "5. Print Text in Reverse\n";
+    cout << "6. Exit\n";
+    cout << "Enter your choice: ";
+}
+
+int main()
+{
+    TextEditor te;
+    int choice, opt, position;
+    char ch;
+
+    do
+    {
+        displayMenu();
+        cin >> choice;
+
+        switch (choice)
+        {
+        case 1:
+            cout << "Enter the character to insert: ";
+            cin >> ch;
+            cout << "Where to insert?\n0. Beginning\n1. End\n2. Specific Position: ";
+            cin >> opt;
+
+            if (opt == 2)
+            {
+                cout << "Enter the position to insert: ";
+                cin >> position;
+                te.InsertText(ch, opt, position);
+            }
+            else
+            {
+                te.InsertText(ch, opt);
+            }
+            break;
+
+        case 2:
+            cout << "Where to delete?\n0. Beginning\n1. End\n2. Specific Character: ";
+            cin >> opt;
+
+            if (opt == 2)
+            {
+                cout << "Enter the character to delete: ";
+                cin >> ch;
+                te.DeleteText(opt, ch);
+            }
+            else
+            {
+                te.DeleteText(opt);
+            }
+            break;
+
+        case 3:
+            te.Display();
+            break;
+
+        case 4:
+            cout << "Enter the character to search: ";
+            cin >> ch;
+            te.Search(ch);
+            break;
+
+        case 5:
+            te.PrintTextInReverse();
+            break;
+
+        case 6:
+            cout << "Exiting program..." << endl;
+            break;
+
+        default:
+            cout << "Invalid choice! Please try again." << endl;
+        }
+
+    } while (choice != 6);
+
+    return 0;
+}
